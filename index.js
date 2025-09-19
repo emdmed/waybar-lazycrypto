@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
-import dotenv from "dotenv";
-dotenv.config();
-import { fetchPrice } from "./fetchPrice.js";
+import { waybarLazyCrypto } from "./waybar-lazycrypto.js";
 
 const parseArgs = () => {
   const args = process.argv.slice(2);
@@ -44,7 +42,7 @@ export const main = async () => {
   const { symbol, color, timeframe } = parseArgs();
 
   try {
-    await fetchPrice({ selectedTimeframe: timeframe, symbol, color });
+    await waybarLazyCrypto({ selectedTimeframe: timeframe, symbol, color });
   } catch (error) {
     console.log(symbol, "Failed");
     process.stderr.write(`Error: ${error.message}\n`);

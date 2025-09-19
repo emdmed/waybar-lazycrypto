@@ -1,5 +1,5 @@
 import axios from "axios";
-import { formatPrice } from "../utils//formatters/formatters.js"
+import { formatPrice } from "./utils/formatters.js"
 
 const TIMEFRAMES_START_DATE_FACTOR = {
   "15min": 26,
@@ -87,7 +87,7 @@ const createCandleVisualization = (historicalData, useColor = false) => {
   return visualization;
 };
 
-export const fetchPrice = async ({ selectedTimeframe = "1hour", symbol = "BTC", color = false }) => {
+export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "BTC", color = false }) => {
   try {
     const kuCoinSymbol = getKuCoinSymbol(symbol);
     const now = Math.floor(Date.now() / 1000);
