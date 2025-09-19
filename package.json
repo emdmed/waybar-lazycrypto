@@ -1,0 +1,31 @@
+{
+  "name": "waybar-lazycrypto",
+  "version": "0.0.1",
+  "type": "module",
+  "bin": {
+    "waybar-lazycrypto": "./index.js"
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "A1GoKn8t",
+  "keywords": [
+    "crypto",
+    "cryptocurrency",
+    "cli",
+    "terminal",
+    "indicators",
+    "waybar"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.2"
+  },
+  "files": [
+    "index.js",
+    "waybar-lazycrypto.js"
+  ]
+}
