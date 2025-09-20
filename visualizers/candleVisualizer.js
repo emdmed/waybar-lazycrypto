@@ -1,4 +1,4 @@
-export const candleVisualizer = (historicalData, useColor = false) => {
+export const candleVisualizer = (historicalData, useColor = false, COLORS) => {
   const allCandles = historicalData.slice(-20);
   const closes = allCandles.map(candle => candle[4]);
   const highs = allCandles.map(candle => candle[2]);
@@ -11,7 +11,7 @@ export const candleVisualizer = (historicalData, useColor = false) => {
 
   let visualization = "";
 
-  allCandles.forEach((candle, index, COLORS) => {
+  allCandles.forEach((candle, index) => {
     //const open = candle[1];
     const close = candle[4];
     const isHighestClose = index === highestCloseIndex;
