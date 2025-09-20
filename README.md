@@ -5,6 +5,8 @@ A lightweight cryptocurrency price tracker with ASCII candle charts for Waybar s
 ![npm version](https://img.shields.io/npm/v/waybar-lazycrypto)
 ![license](https://img.shields.io/npm/l/waybar-lazycrypto)
 
+<img width="476" height="43" alt="image" src="https://github.com/user-attachments/assets/dce3918d-a6d8-4134-bffd-ce465ec58edb" />
+
 ## Features
 
 - 📊 **ASCII Candle Charts** - Visual price trends using ASCII characters
