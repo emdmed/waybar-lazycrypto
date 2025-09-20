@@ -3,6 +3,7 @@ import { formatPrice } from "./utils/formatters.js"
 import { rangeVisualizer } from "./visualizers/rangeVisualizer.js";
 import { calculateIndicators } from "./indicators/indicators.js";
 import { getLatestValue } from "./utils/indicatorUtils.js";
+import { candleVisualizer } from "./visualizers/candleVisualizer.js";
 
 const TIMEFRAMES_START_DATE_FACTOR = {
   "15min": 26,
@@ -17,77 +18,7 @@ const COLORS = {
 }
 
 const getKuCoinSymbol = (cryptoId) => {
-  if (cryptoId === "BTC") return "BTC-USDT";
-  if (cryptoId === "ETH") return "ETH-USDT";
-  if (cryptoId === "ADA") return "ADA-USDT";
-  if (cryptoId === "DOT") return "DOT-USDT";
-  if (cryptoId === "SOL") return "SOL-USDT";
   return `${cryptoId}-USDT`;
-};
-
-const createCandleVisualization = (historicalData, useColor = false) => {
-  const allCandles = historicalData.slice(-20);
-  const closes = allCandles.map(candle => candle[4]);
-  const highs = allCandles.map(candle => candle[2]);
-  const lows = allCandles.map(candle => candle[3]);
-
-  const highestCloseIndex = closes.indexOf(Math.max(...closes));
-  const lowestCloseIndex = closes.indexOf(Math.min(...closes));
-  const highestHighIndex = highs.indexOf(Math.max(...highs));
-  const lowestLowIndex = lows.indexOf(Math.min(...lows));
-
-  let visualization = "";
-
-  allCandles.forEach((candle, index) => {
-    //const open = candle[1];
-    const close = candle[4];
-    const isHighestClose = index === highestCloseIndex;
-    const isLowestClose = index === lowestCloseIndex;
-    const isHighestHigh = index === highestHighIndex;
-    const isLowestLow = index === lowestLowIndex;
-
-    let indicator = "|";
-    let color = "#94a3b8";
-    const prevClose = allCandles[index - 1]?.[4];
-
-    if (prevClose && close > prevClose) {
-      indicator = "/";
-      color = COLORS.green;
-    }
-    if (prevClose && close < prevClose) {
-      indicator = "\\";
-      color = COLORS.red;
-    }
-
-    if (isHighestClose) {
-      indicator = "C";
-      color = COLORS.green;
-    }
-    if (isHighestHigh) {
-      indicator = "h";
-      color = COLORS.green;
-    }
-    if (isHighestClose && isHighestHigh) {
-      indicator = "T";
-      color = COLORS.green;
-    }
-    if (isLowestClose) {
-      indicator = "c";
-      color = COLORS.red;
-    }
-    if (isLowestLow) {
-      indicator = "l";
-      color = COLORS.red;
-    }
-    if (isLowestClose && isLowestLow) {
-      indicator = "B";
-      color = COLORS.red;
-    }
-
-    visualization += useColor ? `<span color="${color}">${indicator}</span>` : indicator;
-  });
-
-  return visualization;
 };
 
 export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "BTC", color = false }) => {
@@ -117,7 +48,7 @@ export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "
     }
 
     const processedData = klineData.map((candle) => {
-      const [timestamp, open, close, high, low, volume, amount] = candle;
+      const [timestamp, open, close, high, low, volume] = candle;
       const timestampMs = parseInt(timestamp) * 1000;
 
       return [
@@ -140,7 +71,7 @@ export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "
     const formattedPrice = formatPrice(currentPrice);
 
     const indicators = calculateIndicators(sortedData)
-    const candleChart = createCandleVisualization(sortedData, color);
+    const candleChart = candleVisualizer(sortedData, color, COLORS);
 
     const bbVisualizer = rangeVisualizer(({
       price: currentPrice,
@@ -173,7 +104,7 @@ export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "
         })
       );
     } else {
-      console.log(`${symbol} ${formattedPrice} ${changePercent}% ${candleChart} ${rsiVisualizer} ${selectedTimeframe}`);
+      console.log(`${symbol} ${formattedPrice} ${changePercent}% ${candleChart} ${selectedTimeframe}`);
     }
 
   } catch (error) {
