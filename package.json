@@ -1,6 +1,6 @@
 {
   "name": "waybar-lazycrypto",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "bin": {
     "waybar-lazycrypto": "./index.js"
