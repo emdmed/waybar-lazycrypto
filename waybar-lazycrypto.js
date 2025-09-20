@@ -1,5 +1,8 @@
 import axios from "axios";
 import { formatPrice } from "./utils/formatters.js"
+import { rangeVisualizer } from "./visualizers/rangeVisualizer.js";
+import { calculateIndicators } from "./indicators/indicators.js";
+import { getLatestValue } from "./utils/indicatorUtils.js";
 
 const TIMEFRAMES_START_DATE_FACTOR = {
   "15min": 26,
@@ -23,7 +26,7 @@ const getKuCoinSymbol = (cryptoId) => {
 };
 
 const createCandleVisualization = (historicalData, useColor = false) => {
-  const allCandles = historicalData.slice(-12); // Show last 12 candles
+  const allCandles = historicalData.slice(-20);
   const closes = allCandles.map(candle => candle[4]);
   const highs = allCandles.map(candle => candle[2]);
   const lows = allCandles.map(candle => candle[3]);
@@ -36,7 +39,7 @@ const createCandleVisualization = (historicalData, useColor = false) => {
   let visualization = "";
 
   allCandles.forEach((candle, index) => {
-    const open = candle[1];
+    //const open = candle[1];
     const close = candle[4];
     const isHighestClose = index === highestCloseIndex;
     const isLowestClose = index === lowestCloseIndex;
@@ -136,7 +139,22 @@ export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "
 
     const formattedPrice = formatPrice(currentPrice);
 
+    const indicators = calculateIndicators(sortedData)
     const candleChart = createCandleVisualization(sortedData, color);
+
+    const bbVisualizer = rangeVisualizer(({
+      price: currentPrice,
+      prevPrice: prevPrice,
+      upperBand: getLatestValue(indicators.bb.upper),
+      middleBand: getLatestValue(indicators.bb.middle),
+      lowerBand: getLatestValue(indicators.bb.lower),
+      width: 10,
+      tag: "BB "
+    }))
+
+    const rsivalue = getLatestValue(indicators.rsi)?.toFixed(0)
+    const rsicolor = rsivalue > 70 || rsivalue < 30 ? COLORS.red : COLORS.green
+    const RSI = `RSI <span color="${rsicolor}">${rsivalue || ""}</span>`
 
     if (color) {
       const priceColor = priceChange >= 0 ? COLORS.green : COLORS.red;
@@ -148,12 +166,14 @@ export const waybarLazyCrypto = async ({ selectedTimeframe = "1hour", symbol = "
             `<span color="${priceColor}">${formattedPrice}</span> ` +
             `<span color="${percentColor}">${changePercent}%</span> ` +
             `${candleChart} ` +
-            `${selectedTimeframe}`,
+            `${RSI}` +
+            ` ${bbVisualizer}` +
+            ` ${selectedTimeframe}`,
           tooltip: "Candle Chart Legend:\nC = Highest close price\nc = Lowest close price\nh = Highest high price\nl = Lowest low price\nT = Highest close and high\nB = Lowest close and low"
         })
       );
     } else {
-      console.log(`${symbol} ${formattedPrice} ${changePercent}% ${candleChart} ${selectedTimeframe}`);
+      console.log(`${symbol} ${formattedPrice} ${changePercent}% ${candleChart} ${rsiVisualizer} ${selectedTimeframe}`);
     }
 
   } catch (error) {
